@@ -2,6 +2,16 @@
  * Create a list that holds all of your cards
  */
 
+var cardList = ['fa fa-diamond', 'fa fa-paper-plane-o', 'fa fa-anchor', 'fa fa-bolt',
+                'fa fa-cube', 'fa fa-anchor', 'fa fa-leaf', 'fa fa-bicycle',
+                'fa fa-diamond', 'fa fa-bomb', 'fa fa-leaf', 'fa fa-bomb',
+                'fa fa-bolt', 'fa fa-bicycle', 'fa fa-paper-plane-o', 'fa fa-cube'];
+var count = 0;
+
+window.onload = function() {
+    cardList = shuffle(cardList);
+    document.body.addEventListener('click', clickHandler);
+};
 
 /*
  * Display the cards on the page
@@ -23,6 +33,75 @@ function shuffle(array) {
     }
 
     return array;
+}
+
+function updateCards() {
+    var cards = document.getElementsByClassName('card');
+    var length = cards.length;
+    for(var i=0; i<length; i++) {
+        cards[i].className = 'card';
+        var child = cards[i].firstElementChild;
+        child.className = cardList[i];
+    }
+}
+
+var previousCard = null;
+
+function clickHandler(event) {
+    if(event.target.id === 'restart_btn') {
+        console.log('clicked restart');
+        cardList = shuffle(cardList);
+        updateCards();
+    }
+    else if(event.target.className === 'card') {
+        console.log('card');
+        addClass(event.target, 'open');
+        addClass(event.target, 'show');
+
+        setTimeout(function() {
+            if(previousCard == null) {
+                previousCard = event.target;
+            }
+            else {
+                if(previousCard.firstElementChild.className === event.target.firstElementChild.className) {
+                    addClass(event.target, 'match');
+                    addClass(previousCard, 'match');
+                }
+                else {
+                    removeClass(event.target, 'open');
+                    removeClass(event.target, 'show');
+
+                    removeClass(previousCard, 'open');
+                    removeClass(previousCard, 'show');
+                }
+                previousCard = null;
+            }
+        }, 500);
+    }
+}
+
+function addClass(element, name) {
+    var className = element.className;
+    if(className.indexOf(name) != -1) {
+        return;
+    }
+    else {
+        element.className = className + ' ' + name;
+    }
+}
+
+function removeClass(element, name) {
+    var className = element.className;
+    if(className.indexOf(name) == -1) {
+        return;
+    }
+    else {
+        element.className = className.replace(name, '');
+    }
+}
+
+function getCardName(element) {
+    return element.firstElementChild.className;
 }
 
 
