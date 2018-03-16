@@ -9,6 +9,7 @@ var cardList = ['fa fa-diamond', 'fa fa-paper-plane-o', 'fa fa-anchor', 'fa fa-b
 var previousCard = null;
 var matchedCount = 0;
 var moveCount = 0;
+var starCount = 0;
 
 window.onload = function() {
     cardList = shuffle(cardList);
@@ -26,6 +27,8 @@ window.onload = function() {
      previousCard = null;
      matchedCount = 0;
      moveCount = 0;
+     starCount = 3;
+     updateStar();
      cardList = shuffle(cardList);
      updateCards();
      document.getElementById("moveCount").innerText = 0;
@@ -72,6 +75,16 @@ function clickHandler(event) {
             }
             else {
                 moveCount++;
+                if(8 <= moveCount && moveCount < 13) {
+                    starCount = 2;
+                    updateStar();
+                } else if(13 <= moveCount && moveCount <= 18) {
+                    starCount = 1;
+                    updateStar();
+                } else if(moveCount > 18) {
+                    starCount = 0;
+                    updateStar();
+                }
                 document.getElementById("moveCount").innerText = moveCount;
                 if(previousCard.firstElementChild.className === event.target.firstElementChild.className) {
                     addClass(event.target, 'match');
@@ -80,7 +93,7 @@ function clickHandler(event) {
                     if(matchedCount == cardList.length/2) {
                         matchedCount = 0;
 
-                        var result = confirm("Congratulations! You won with only " + moveCount + " moves! If you want to play the one more game, press OK.");
+                        var result = confirm("Congratulations!\nYou won with only [ " + moveCount + " ] moves! and [ " + starCount + " ] stars!\nIf you want to play the one more game, press OK.");
                         if (result) {
                             init();
                             console.log("Again");
@@ -122,6 +135,19 @@ function removeClass(element, name) {
     }
 }
 
+function updateStar() {
+    var stars = document.getElementById("stars");
+    var len = stars.children.length;
+    var currentStar = starCount;
+    var i=0;
+    while(currentStar--){
+        stars.children[i++].firstElementChild.className = "fa fa-star";
+    }
+    var emptyStar = len-i;
+    while(emptyStar--) {
+        stars.children[i++].firstElementChild.className = "fa fa-star-o";
+    }
+}
 
 /*
  * set up the event listener for a card. If a card is clicked:
