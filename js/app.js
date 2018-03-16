@@ -6,7 +6,9 @@ var cardList = ['fa fa-diamond', 'fa fa-paper-plane-o', 'fa fa-anchor', 'fa fa-b
                 'fa fa-cube', 'fa fa-anchor', 'fa fa-leaf', 'fa fa-bicycle',
                 'fa fa-diamond', 'fa fa-bomb', 'fa fa-leaf', 'fa fa-bomb',
                 'fa fa-bolt', 'fa fa-bicycle', 'fa fa-paper-plane-o', 'fa fa-cube'];
-var count = 0;
+var previousCard = null;
+var matchedCount = 0;
+var moveCount = 0;
 
 window.onload = function() {
     cardList = shuffle(cardList);
@@ -19,6 +21,15 @@ window.onload = function() {
  *   - loop through each card and create its HTML
  *   - add each card's HTML to the page
  */
+
+ function init() {
+     previousCard = null;
+     matchedCount = 0;
+     moveCount = 0;
+     cardList = shuffle(cardList);
+     updateCards();
+     document.getElementById("moveCount").innerText = 0;
+ }
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -45,15 +56,12 @@ function updateCards() {
     }
 }
 
-var previousCard = null;
-
 function clickHandler(event) {
     if(event.target.id === 'restart_btn') {
         console.log('clicked restart');
-        cardList = shuffle(cardList);
-        updateCards();
+        init();
     }
-    else if(event.target.className === 'card') {
+    else if(event.target.className.indexOf('card') != -1) {
         console.log('card');
         addClass(event.target, 'open');
         addClass(event.target, 'show');
@@ -63,9 +71,23 @@ function clickHandler(event) {
                 previousCard = event.target;
             }
             else {
+                moveCount++;
+                document.getElementById("moveCount").innerText = moveCount;
                 if(previousCard.firstElementChild.className === event.target.firstElementChild.className) {
                     addClass(event.target, 'match');
                     addClass(previousCard, 'match');
+                    matchedCount++;
+                    if(matchedCount == cardList.length/2) {
+                        matchedCount = 0;
+
+                        var result = confirm("Congratulations! You won with only " + moveCount + " moves! If you want to play the one more game, press OK.");
+                        if (result) {
+                            init();
+                            console.log("Again");
+                        } else {
+                            console.log("Cancel");
+                        }
+                    }
                 }
                 else {
                     removeClass(event.target, 'open');
@@ -98,10 +120,6 @@ function removeClass(element, name) {
     else {
         element.className = className.replace(name, '');
     }
-}
-
-function getCardName(element) {
-    return element.firstElementChild.className;
 }
 
 
