@@ -10,6 +10,9 @@ var previousCard = null;
 var matchedCount = 0;
 var moveCount = 0;
 var starCount = 0;
+var isFirstClick = true;
+var startTime = 0;
+var endTime = 0;
 
 window.onload = function() {
     cardList = shuffle(cardList);
@@ -32,6 +35,9 @@ window.onload = function() {
      cardList = shuffle(cardList);
      updateCards();
      document.getElementById("moveCount").innerText = 0;
+     isFirstClick = true;
+     startTime = 0;
+     endTime = 0;
  }
 
 // Shuffle function from http://stackoverflow.com/a/2450976
@@ -64,8 +70,14 @@ function clickHandler(event) {
         console.log('clicked restart');
         init();
     }
-    else if(event.target.className.indexOf('card') != -1) {
+    else if(event.target.className.indexOf('card') != -1 && event.target.className.indexOf('open') == -1) {
         console.log('card');
+
+        if(isFirstClick) {
+            startTime = Date.now();
+        }
+        isFirstClick = false;
+
         addClass(event.target, 'open');
         addClass(event.target, 'show');
 
@@ -75,16 +87,14 @@ function clickHandler(event) {
             }
             else {
                 moveCount++;
-                if(8 <= moveCount && moveCount < 13) {
+                if(10 < moveCount && moveCount <= 15) {
                     starCount = 2;
                     updateStar();
-                } else if(13 <= moveCount && moveCount <= 18) {
+                } else if(moveCount > 15) {
                     starCount = 1;
                     updateStar();
-                } else if(moveCount > 18) {
-                    starCount = 0;
-                    updateStar();
                 }
+
                 document.getElementById("moveCount").innerText = moveCount;
                 if(previousCard.firstElementChild.className === event.target.firstElementChild.className) {
                     addClass(event.target, 'match');
@@ -93,7 +103,9 @@ function clickHandler(event) {
                     if(matchedCount == cardList.length/2) {
                         matchedCount = 0;
 
-                        var result = confirm("Congratulations!\nYou won with only [ " + moveCount + " ] moves! and [ " + starCount + " ] stars!\nIf you want to play the one more game, press OK.");
+                        endTime = Date.now();
+                        var performTime = Math.floor((endTime - startTime)/1000);
+                        var result = confirm("Congratulations!\nYou won within [" + performTime + "] seconds.\nYou got [ " + moveCount + " ] moves! and [ " + starCount + " ] stars!\nStars mean \n\t'moves < 10 : 3 stars'\n\t'10 <= moves <= 15 : 2 stars'\n\t'moves > 15 : 1 stars'\nIf you want to play the one more game, press OK.");
                         if (result) {
                             init();
                             console.log("Again");
