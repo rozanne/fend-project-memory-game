@@ -1,32 +1,41 @@
-/*
- * Create a list that holds all of your cards
- */
-
+// all cards in this game
 var cardList = ['fa fa-diamond', 'fa fa-paper-plane-o', 'fa fa-anchor', 'fa fa-bolt',
                 'fa fa-cube', 'fa fa-anchor', 'fa fa-leaf', 'fa fa-bicycle',
                 'fa fa-diamond', 'fa fa-bomb', 'fa fa-leaf', 'fa fa-bomb',
                 'fa fa-bolt', 'fa fa-bicycle', 'fa fa-paper-plane-o', 'fa fa-cube'];
+
+// initial variable
 var previousCard = null;
 var matchedCount = 0;
 var moveCount = 0;
 var starCount = 0;
 var isFirstClick = true;
-var startTime = 0;
-var endTime = 0;
 
 window.onload = function() {
+    // as starting game, shuffle cards
     cardList = shuffle(cardList);
+
+    // add click event in document
     document.body.addEventListener('click', clickHandler);
 };
 
-/*
- * Display the cards on the page
- *   - shuffle the list of cards using the provided "shuffle" method below
- *   - loop through each card and create its HTML
- *   - add each card's HTML to the page
- */
+// timer for measuring play time
+var timer = {
+    item: null,
+    playingTime: 0,
+    INTERVAL: 1000,
+    start: function() {
+        timer.item = window.setInterval(function() {
+            document.getElementById("time").innerText = ++timer.playingTime;
+        }, timer.INTERVAL);
+    },
+    clear: function() {
+         window.clearInterval(timer.item);
+    }
+};
 
- function init() {
+// init function for new games
+function init() {
      previousCard = null;
      matchedCount = 0;
      moveCount = 0;
@@ -35,9 +44,10 @@ window.onload = function() {
      cardList = shuffle(cardList);
      updateCards();
      document.getElementById("moveCount").innerText = 0;
+     document.getElementById("time").innerText = '';
      isFirstClick = true;
-     startTime = 0;
-     endTime = 0;
+     timer.clear();
+     timer.playingTime = 0;
  }
 
 // Shuffle function from http://stackoverflow.com/a/2450976
@@ -55,6 +65,7 @@ function shuffle(array) {
     return array;
 }
 
+// render cards as refering cardList
 function updateCards() {
     var cards = document.getElementsByClassName('card');
     var length = cards.length;
@@ -65,6 +76,7 @@ function updateCards() {
     }
 }
 
+// click handler for game
 function clickHandler(event) {
     if(event.target.id === 'restart_btn') {
         console.log('clicked restart');
@@ -74,7 +86,7 @@ function clickHandler(event) {
         console.log('card');
 
         if(isFirstClick) {
-            startTime = Date.now();
+            timer.start();
         }
         isFirstClick = false;
 
@@ -102,9 +114,8 @@ function clickHandler(event) {
                     matchedCount++;
                     if(matchedCount == cardList.length/2) {
                         matchedCount = 0;
-
-                        endTime = Date.now();
-                        var performTime = Math.floor((endTime - startTime)/1000);
+                        timer.clear();
+                        var performTime = timer.playingTime;
                         var result = confirm("Congratulations!\nYou won within [" + performTime + "] seconds.\nYou got [ " + moveCount + " ] moves! and [ " + starCount + " ] stars!\nStars mean \n\t'moves < 10 : 3 stars'\n\t'10 <= moves <= 15 : 2 stars'\n\t'moves > 15 : 1 stars'\nIf you want to play the one more game, press OK.");
                         if (result) {
                             init();
@@ -127,6 +138,7 @@ function clickHandler(event) {
     }
 }
 
+// Util function : to add class at the element
 function addClass(element, name) {
     var className = element.className;
     if(className.indexOf(name) != -1) {
@@ -137,6 +149,7 @@ function addClass(element, name) {
     }
 }
 
+// Util function : to remove class at the element
 function removeClass(element, name) {
     var className = element.className;
     if(className.indexOf(name) == -1) {
@@ -147,6 +160,7 @@ function removeClass(element, name) {
     }
 }
 
+// update star rating
 function updateStar() {
     var stars = document.getElementById("stars");
     var len = stars.children.length;

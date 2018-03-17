@@ -34,6 +34,9 @@ Memory game will be started when the user click and try to turn over the first c
         * 10 <= moves <= 15, user get 2 stars
         * moves > 15, user get 1 stars'
 
+* times
+    - As starting the game, playing time is shown at the right of the site.
+
 ## Contributing
 
 This repository is the starter code for _all_ Udacity students. Therefore, we most likely will not accept pull requests.

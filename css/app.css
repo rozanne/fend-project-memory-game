@@ -33,6 +33,16 @@ h1 {
     font-weight: 300;
 }
 
+#time {
+    z-index: 100;
+    top: 50px;
+    right: 50px;
+    position: absolute;
+    font-weight: bold;
+    font-size: 100px;
+    color: red;
+}
+
 /*
  * Styles for the deck of cards
  */
